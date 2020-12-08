@@ -19,6 +19,9 @@ namespace DataAccessLayer.Context
             modelBuilder.Entity<Contact>()
                 .HasIndex(p => new { p.Name, p.Address})
                 .IsUnique();
+
+            modelBuilder.Entity<TelephoneNumber>().HasData(Seed.Numbers);
+            modelBuilder.Entity<Contact>().HasData(Seed.Contacts);
         }
 
         public DbSet<Contact> Contacts { get; set; }

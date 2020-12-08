@@ -14,6 +14,13 @@ namespace DataAccessLayer.Context
 
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Contact>()
+                .HasIndex(p => new { p.Name, p.Address})
+                .IsUnique();
+        }
+
         public DbSet<Contact> Contacts { get; set; }
 
     }

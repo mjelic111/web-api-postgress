@@ -6,9 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Context
 {
-    public class DatabasebContext: DbContext
+    public class DatabaseContext: DbContext
     {
-        public DatabasebContext(DbContextOptions<DatabasebContext> options): base(options)
+
+        public DatabaseContext(DbContextOptions<DatabaseContext> options): base(options)
         {
 
         }

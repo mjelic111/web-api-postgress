@@ -29,8 +29,12 @@ namespace DataAccessLayer.Repository
 
         public async Task DeleteAsync(int id, bool unitOfWork = false)
         {
-            var entity = context.Set<T>().AsNoTracking().SingleOrDefault(e => e.Id == id);
+            var entity = context.Set<T>().SingleOrDefault(e => e.Id == id);
             CheckIsEntityFound(entity, id);
+            if (entity.Deleted)
+            {
+                throw new EntityNotFoundException($"Entity with specified id: {id} not found");
+            }
             entity.Deleted = true;
             if (!unitOfWork)
             {
@@ -40,12 +44,12 @@ namespace DataAccessLayer.Repository
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await entitiesWithInclude.AsNoTracking().ToListAsync();
+            return await entitiesWithInclude.AsNoTracking().Where(e => e.Deleted == false).ToListAsync();
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            var entity = await entitiesWithInclude.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
+            var entity = await entitiesWithInclude.AsNoTracking().Where(e => e.Deleted == false).SingleOrDefaultAsync(e => e.Id == id);
             CheckIsEntityFound(entity, id);
             return entity;
         }
@@ -64,12 +68,6 @@ namespace DataAccessLayer.Repository
         public async Task UpdateAsync(T entity, bool unitOfWork = false)
         {
             CheckIsEntityNull(entity);
-            //var dbEntity = context.Set<T>().AsNoTracking().SingleOrDefault(e => e.Id == entity.Id);
-            //CheckIsEntityFound(entity, entity.Id);
-            //// dont override base entites
-            //entity.CreatedAt = dbEntity.CreatedAt;
-            //entity.Deleted = dbEntity.Deleted;
-            //update
             context.Entry(entity).State = EntityState.Modified;
             if (!unitOfWork)
             {

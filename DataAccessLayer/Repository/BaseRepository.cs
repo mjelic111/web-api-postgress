@@ -13,52 +13,64 @@ namespace DataAccessLayer.Repository
     public class BaseRepository<T> : IRepository<T> where T : BaseEntity
     {
         private readonly DatabaseContext context;
-        private IQueryable<T> entities;
+        private IQueryable<T> entitiesWithInclude;
 
         public BaseRepository(DatabaseContext Context)
         {
             context = Context;
-            entities = context.Set<T>().AsQueryable();
+            entitiesWithInclude = context.Set<T>().AsQueryable();
         }
 
         public IRepository<T> Include(string navigationPropertyName)
         {
-            entities = entities.Include(navigationPropertyName);
+            entitiesWithInclude = context.Set<T>().Include(navigationPropertyName);
             return this;
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var entity = entities.SingleOrDefault(e => e.Id == id);
-            CheckIsEntityNull(entity, id);
+            var entity = context.Set<T>().SingleOrDefault(e => e.Id == id);
+            CheckIsEntityFound(entity, id);
             entity.Deleted = true;
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
         }
 
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return entities.AsEnumerable();
+            return await entitiesWithInclude.ToListAsync();
         }
 
-        public T GetById(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            var entity = entities.SingleOrDefault(e => e.Id == id);
-            CheckIsEntityNull(entity, id);
+            var entity = await entitiesWithInclude.SingleOrDefaultAsync(e => e.Id == id);
+            CheckIsEntityFound(entity, id);
             return entity;
         }
 
-        public void Insert(T entity)
+        public async Task InsertAsync(T entity)
         {
-            throw new NotImplementedException();
+            CheckIsEntityNull(entity);
+            context.Set<T>().Add(entity);
+            await context.SaveChangesAsync();
         }
 
-        public void Update(T entity)
+        public async Task UpdateAsync(T entity)
         {
-            throw new NotImplementedException();
+            CheckIsEntityNull(entity);
+            context.Entry(entity).State = EntityState.Modified;
+            await context.SaveChangesAsync();
         }
 
-        private void CheckIsEntityNull(T entity, int id)
+        private void CheckIsEntityNull(T entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException("entity cannot be null");
+            }
+        }
+
+        private void CheckIsEntityFound(T entity, int id)
         {
             if (entity == null)
             {

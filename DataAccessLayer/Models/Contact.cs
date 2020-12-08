@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DataAccessLayer.Models
 {
-    public class Contact
+    public class Contact: IEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

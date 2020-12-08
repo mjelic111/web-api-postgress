@@ -9,6 +9,7 @@ namespace DataAccessLayer.Repository
 {
     public interface IRepository<T> where T: BaseEntity
     {
+        IRepository<T> Include(string navigationPropertyName);
         IEnumerable<T> GetAll();
         T GetById(int id);
         void Insert(T entity);

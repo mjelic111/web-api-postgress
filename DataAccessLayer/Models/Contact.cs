@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DataAccessLayer.Models
 {
-    public class Contact : BaseEntity, IEntity
+    public class Contact : BaseEntity
     {
         public string Name { get; set; }
         public string Address { get; set; }

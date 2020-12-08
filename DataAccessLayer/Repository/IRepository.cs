@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Repository
 {
-    public interface IRepository<T> where T: IEntity
+    public interface IRepository<T> where T: BaseEntity
     {
         IEnumerable<T> GetAll();
         T GetById(int id);

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  database:
+    image: "postgres"
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=superstrongpassword
+      - POSTGRES_DB=contacts_db
+    volumes: 
+      - ../postgres-db:/var/lib/postgresql/data/
+    ports: 
+      - "5432:5432"

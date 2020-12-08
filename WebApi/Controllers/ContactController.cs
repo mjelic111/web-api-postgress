@@ -12,7 +12,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ContactController: ControllerBase
+    public class ContactController : ControllerBase
     {
         private readonly IRepository<Contact> repository;
 
@@ -22,11 +22,12 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("getAll")]
-        public ActionResult<IEnumerable<ContactModel>> GetAll()
+        public async Task<ActionResult<IEnumerable<ContactModel>>> GetAll()
         {
             try
             {
-                var contacts =  repository.Include(nameof(Contact.TelephoneNumbers)).GetAll().Select(c => new ContactModel
+                var contacts = await repository.Include(nameof(Contact.TelephoneNumbers)).GetAllAsync();
+                var mapped = contacts.Select(c => new ContactModel
                 {
                     Id = c.Id,
                     Name = c.Name,
@@ -34,10 +35,10 @@ namespace WebApi.Controllers
                     BirthDate = c.BirthDate,
                     TelephoneNumbers = c.TelephoneNumbers.Select(t => t.Number).AsEnumerable()
                 }).ToList();
-                return Ok(contacts);
-                 
+                return Ok(mapped);
+
             }
-            catch(EntityNotFoundException e)
+            catch (EntityNotFoundException e)
             {
                 return NotFound();
             }
@@ -48,11 +49,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("id")]
-        public ActionResult<ContactModel> Get(int id)
+        public async Task<ActionResult<ContactModel>> Get(int id)
         {
             try
             {
-                var contact = repository.Include(nameof(Contact.TelephoneNumbers)).GetById(id);
+                var contact = await repository.Include(nameof(Contact.TelephoneNumbers)).GetByIdAsync(id);
                 var contactModel = new ContactModel
                 {
                     Id = contact.Id,

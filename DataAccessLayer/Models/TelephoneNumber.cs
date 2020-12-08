@@ -16,5 +16,7 @@ namespace DataAccessLayer.Models
         public string Number { get; set; }
         public int ContactId { get; set; }
         public Contact Contact { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool Deleted { get; set; }
     }
 }

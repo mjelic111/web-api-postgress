@@ -33,7 +33,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                if(pageNumber < 1)
+                if (pageNumber < 1)
                 {
                     return BadRequest("page number not valid");
                 }
@@ -41,16 +41,7 @@ namespace WebApi.Controllers
                 var contacts = await repository.Include(nameof(Contact.TelephoneNumbers)).GetAllAsync(pageNumber, pageSize);
                 var mapped = contacts.Select(c => c.MapToDto()).ToList();
                 // pagination
-                var totalRecords = await repository.GetCount();
-                var result = new PaginatedResult<List<ContactModel>>
-                {
-                    Previous= "prevLink", // TODO generate link
-                    Next= "nextLink",  // TODO generate link
-                    Current = pageNumber,
-                    Total = Convert.ToInt32((double)totalRecords/(pageSize * pageNumber) + 0.5),
-                    Data = mapped
-                };
-                return Ok(result);
+                return await mapToPaginationModel(pageNumber, pageSize, mapped);
 
             }
             catch (Exception e)
@@ -167,6 +158,28 @@ namespace WebApi.Controllers
             }
 
             return BadRequest(e.Message);
+        }
+
+        private async Task<ActionResult<IEnumerable<ContactModel>>> mapToPaginationModel(int pageNumber, int pageSize, List<ContactModel> mapped)
+        {
+            var totalRecords = await repository.GetCount();
+            var totalPages = Convert.ToInt32((double)totalRecords / pageSize + 0.5);
+
+            if (pageNumber > totalPages)
+            {
+                return BadRequest("page number not valid");
+            }
+
+            var result = new PaginatedResult<List<ContactModel>>
+            {
+                Previous = pageNumber > 1 ? this.Url.ActionLink("GetAll", "Contact", new { pageNumber = pageNumber - 1 }) : "",
+                Next = pageNumber < totalPages ? this.Url.ActionLink("GetAll", "Contact", new { pageNumber = pageNumber + 1 }) : "",
+                Current = pageNumber,
+                TotalPages = totalPages,
+                TotalRecords = totalRecords,
+                Data = mapped
+            };
+            return Ok(result);
         }
     }
 }

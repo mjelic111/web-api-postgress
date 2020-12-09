@@ -1,8 +1,5 @@
 ﻿using DataAccessLayer.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccessLayer.Repository
@@ -10,7 +7,8 @@ namespace DataAccessLayer.Repository
     public interface IRepository<T> where T: BaseEntity
     {
         IRepository<T> Include(string navigationPropertyName);
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<int> GetCount();
+        Task<IEnumerable<T>> GetAllAsync(int pageNumber, int pageSize);
         Task<T> GetByIdAsync(int id);
         Task<int> InsertAsync(T entity, bool unitOfWork = false);
         Task UpdateAsync(T entity, bool unitOfWork = false);

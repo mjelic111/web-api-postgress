@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.Models;
 using DataAccessLayer.Context;
 using DataAccessLayer.Repository;
 using Microsoft.AspNetCore.Builder;
@@ -40,7 +41,7 @@ namespace WebApi
                 );
             services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
             services.AddControllers();
-
+            services.Configure<PaginationSettings>(Configuration.GetSection("Pagination"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

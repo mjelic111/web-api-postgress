@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccessLayer.Repository
@@ -15,10 +14,10 @@ namespace DataAccessLayer.Repository
         private readonly DatabaseContext context;
         private IQueryable<T> entitiesWithInclude;
 
-        public BaseRepository(DatabaseContext Context)
+        public BaseRepository(DatabaseContext context)
         {
-            context = Context;
-            entitiesWithInclude = context.Set<T>().AsQueryable();
+            this.context = context;
+            entitiesWithInclude = this.context.Set<T>().AsQueryable();
         }
 
         public IRepository<T> Include(string navigationPropertyName)
@@ -42,14 +41,21 @@ namespace DataAccessLayer.Repository
             }
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<int> GetCount()
         {
-            return await entitiesWithInclude.AsNoTracking().Where(e => e.Deleted == false).ToListAsync();
+            return await context.Set<T>().AsNoTracking().CountAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync(int pageNumber, int pageSize)
+        {
+            var skip = (pageNumber - 1) * pageSize;
+            return await entitiesWithInclude.AsNoTracking().Skip(skip).Take(pageSize).ToListAsync();
+
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            var entity = await entitiesWithInclude.AsNoTracking().Where(e => e.Deleted == false).SingleOrDefaultAsync(e => e.Id == id);
+            var entity = await entitiesWithInclude.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
             CheckIsEntityFound(entity, id);
             return entity;
         }
@@ -60,9 +66,9 @@ namespace DataAccessLayer.Repository
             context.Set<T>().Add(entity);
             if (!unitOfWork)
             {
-                return await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
-            return 0;
+            return entity.Id;
         }
 
         public async Task UpdateAsync(T entity, bool unitOfWork = false)
@@ -75,7 +81,7 @@ namespace DataAccessLayer.Repository
             }
         }
 
-            public async Task SaveChanges()
+        public async Task SaveChanges()
         {
             await context.SaveChangesAsync();
         }

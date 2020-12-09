@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DataAccessLayer.Models;
+﻿using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Context
@@ -23,6 +20,10 @@ namespace DataAccessLayer.Context
 
             modelBuilder.Entity<TelephoneNumber>().HasData(Seed.Numbers);
             modelBuilder.Entity<Contact>().HasData(Seed.Contacts);
+
+            // global filters
+            modelBuilder.Entity<Contact>().HasQueryFilter(p => !p.Deleted);
+            modelBuilder.Entity<TelephoneNumber>().HasQueryFilter(p => !p.Deleted);
         }
 
         public DbSet<Contact> Contacts { get; set; }

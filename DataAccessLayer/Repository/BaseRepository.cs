@@ -1,4 +1,5 @@
-﻿using DataAccessLayer.Context;
+﻿using Common.Models;
+using DataAccessLayer.Context;
 using DataAccessLayer.Errors;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,10 @@ namespace DataAccessLayer.Repository
         private readonly DatabaseContext context;
         private IQueryable<T> entitiesWithInclude;
 
-        public BaseRepository(DatabaseContext Context)
+        public BaseRepository(DatabaseContext context)
         {
-            context = Context;
-            entitiesWithInclude = context.Set<T>().AsQueryable();
+            this.context = context;
+            entitiesWithInclude = this.context.Set<T>().AsQueryable();
         }
 
         public IRepository<T> Include(string navigationPropertyName)
@@ -42,9 +43,16 @@ namespace DataAccessLayer.Repository
             }
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<int> GetCount()
         {
-            return await entitiesWithInclude.AsNoTracking().ToListAsync();
+            return await context.Set<T>().AsNoTracking().CountAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync(int pageNumber, int pageSize)
+        {
+            var skip = (pageNumber - 1) * pageSize;
+            return await entitiesWithInclude.AsNoTracking().Skip(skip).Take(pageSize).ToListAsync();
+
         }
 
         public async Task<T> GetByIdAsync(int id)
@@ -75,7 +83,7 @@ namespace DataAccessLayer.Repository
             }
         }
 
-            public async Task SaveChanges()
+        public async Task SaveChanges()
         {
             await context.SaveChangesAsync();
         }

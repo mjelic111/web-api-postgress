@@ -4,6 +4,7 @@ using DataAccessLayer.Models;
 using DataAccessLayer.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,21 +19,38 @@ namespace WebApi.Controllers
     {
         private readonly IRepository<Contact> repository;
         private readonly IRepository<TelephoneNumber> telephoneNumberRepository;
+        private readonly IOptions<PaginationSettings> paginationSettings;
 
-        public ContactController(IRepository<Contact> repository, IRepository<TelephoneNumber> telephoneNumberRepository)
+        public ContactController(IRepository<Contact> repository, IRepository<TelephoneNumber> telephoneNumberRepository, IOptions<PaginationSettings> paginationSettings)
         {
             this.repository = repository;
             this.telephoneNumberRepository = telephoneNumberRepository;
+            this.paginationSettings = paginationSettings;
         }
 
-        [HttpGet("getAll")]
-        public async Task<ActionResult<IEnumerable<ContactModel>>> GetAll()
+        [HttpGet("get/{pageNumber}")]
+        public async Task<ActionResult<IEnumerable<ContactModel>>> GetAll(int pageNumber = 1)
         {
             try
             {
-                var contacts = await repository.Include(nameof(Contact.TelephoneNumbers)).GetAllAsync();
+                if(pageNumber < 1)
+                {
+                    return BadRequest("page number not valid");
+                }
+                var pageSize = paginationSettings.Value.PageSize;
+                var contacts = await repository.Include(nameof(Contact.TelephoneNumbers)).GetAllAsync(pageNumber, pageSize);
                 var mapped = contacts.Select(c => c.MapToDto()).ToList();
-                return Ok(mapped);
+                // pagination
+                var totalRecords = await repository.GetCount();
+                var result = new PaginatedResult<List<ContactModel>>
+                {
+                    Previous= "prevLink", // TODO generate link
+                    Next= "nextLink",  // TODO generate link
+                    Current = pageNumber,
+                    Total = Convert.ToInt32((double)totalRecords/(pageSize * pageNumber) + 0.5),
+                    Data = mapped
+                };
+                return Ok(result);
 
             }
             catch (Exception e)

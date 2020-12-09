@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import "./Clients.css";
 import Pagination from "./components/Pagination";
 import Table from "./components/Table";
+import CreateClient from "./components/CreateClient";
 
 function Clients() {
   const [loading, setLoading] = useState(true);
@@ -38,7 +39,7 @@ function Clients() {
     <>
       <Container>
         <Row>
-          <h1>Simple Client</h1>
+          <h1>Simple Client Data</h1>
         </Row>
         <Row>
           <Table data={data} />
@@ -48,6 +49,12 @@ function Clients() {
             totalPages={totalPages}
             setUrl={setUrl}
           />
+        </Row>
+        <Row>
+          <h2>Create new client</h2>
+        </Row>
+        <Row>
+          <CreateClient />
         </Row>
       </Container>
     </>

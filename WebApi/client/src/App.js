@@ -1,9 +1,13 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Clients from './Clients'
+import "bootstrap/dist/css/bootstrap.min.css";
+import Toast from "./components/Toast";
+import Clients from "./Clients";
 
 function App() {
   return (
-    <Clients/>
+    <>
+      <Clients />
+      <Toast />
+    </>
   );
 }
 

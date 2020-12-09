@@ -4,6 +4,7 @@ import "./Clients.css";
 import Pagination from "./components/Pagination";
 import Table from "./components/Table";
 import CreateClient from "./components/CreateClient";
+import toast from "react-simple-toasts";
 
 function Clients() {
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,19 @@ function Clients() {
     }
     fetchData();
   }, [url]);
+
+  const createContact = async (data) => {
+    console.log("Creating client...");
+    const url = process.env.REACT_APP_API_URL + "contact";
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+    });
+    toast("Client created", 1500);
+    console.log("Client created...");
+  };
+
   if (loading) {
     return (
       <p>
@@ -54,7 +68,7 @@ function Clients() {
           <h2>Create new client</h2>
         </Row>
         <Row>
-          <CreateClient />
+          <CreateClient createContact={createContact} />
         </Row>
       </Container>
     </>

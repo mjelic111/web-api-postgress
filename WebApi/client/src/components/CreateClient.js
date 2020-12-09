@@ -13,8 +13,11 @@ const CreateClient = ({ createContact }) => {
     <Form
       onSubmit={(e) => {
         e.preventDefault();
-        console.log({ name, address, birthDate, tel1, tel2, tel3 });
-        createContact();
+        const telephoneNumbers = [];
+        if (tel1) telephoneNumbers.push(tel1);
+        if (tel2) telephoneNumbers.push(tel2);
+        if (tel3) telephoneNumbers.push(tel3);
+        createContact({ name, address, birthDate, telephoneNumbers });
       }}
     >
       <FormGroup>

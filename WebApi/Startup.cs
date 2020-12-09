@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using WebApi.Hubs;
 
 namespace WebApi
 {
@@ -40,6 +41,7 @@ namespace WebApi
                 options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"))
                 );
             services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+            services.AddSignalR();
             services.AddControllers();
             services.Configure<PaginationSettings>(Configuration.GetSection("Pagination"));
         }
@@ -63,6 +65,7 @@ namespace WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ContactHub>("/contactHub");
             });
         }
     }

@@ -6,8 +6,13 @@ This is simple API for managing customets
 
 ## Tools and framwork
 - .Net 5
+  - Dependency Injection
+- SignalR
+  - live update on create/edit
 - Ef Core
   - Code first
   - Migrations
+  - Generic CRUD repository
+  - Pagination
 - Docker
-  - postgres docker-compose
+  - postgres docker for database

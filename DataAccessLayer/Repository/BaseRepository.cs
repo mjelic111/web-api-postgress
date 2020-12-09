@@ -44,12 +44,12 @@ namespace DataAccessLayer.Repository
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await entitiesWithInclude.AsNoTracking().Where(e => e.Deleted == false).ToListAsync();
+            return await entitiesWithInclude.AsNoTracking().ToListAsync();
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            var entity = await entitiesWithInclude.AsNoTracking().Where(e => e.Deleted == false).SingleOrDefaultAsync(e => e.Id == id);
+            var entity = await entitiesWithInclude.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
             CheckIsEntityFound(entity, id);
             return entity;
         }
@@ -60,9 +60,9 @@ namespace DataAccessLayer.Repository
             context.Set<T>().Add(entity);
             if (!unitOfWork)
             {
-                return await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
-            return 0;
+            return entity.Id;
         }
 
         public async Task UpdateAsync(T entity, bool unitOfWork = false)

@@ -23,6 +23,10 @@ namespace DataAccessLayer.Context
 
             modelBuilder.Entity<TelephoneNumber>().HasData(Seed.Numbers);
             modelBuilder.Entity<Contact>().HasData(Seed.Contacts);
+
+            // global filters
+            modelBuilder.Entity<Contact>().HasQueryFilter(p => !p.Deleted);
+            modelBuilder.Entity<TelephoneNumber>().HasQueryFilter(p => !p.Deleted);
         }
 
         public DbSet<Contact> Contacts { get; set; }

@@ -2,13 +2,13 @@ import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
 const PaginationWrapper = ({ next, previous, totalPages, setUrl }) => {
   const changePage = (pageNumber) => {
-    const url = process.env.REACT_APP_API_URL + "contact/get/" + pageNumber;
+    const url = process.env.REACT_APP_API_URL + "api/contact/get/" + pageNumber;
     setUrl(url);
   };
   return (
     <Pagination aria-label="Page navigation example">
       <PaginationItem>
-        <PaginationLink first href="#" />
+        <PaginationLink first onClick={() => changePage(1)} />
       </PaginationItem>
       {previous && (
         <PaginationItem>
@@ -30,7 +30,7 @@ const PaginationWrapper = ({ next, previous, totalPages, setUrl }) => {
         </PaginationItem>
       )}
       <PaginationItem>
-        <PaginationLink last href="#" />
+        <PaginationLink last onClick={() => changePage(totalPages)} />
       </PaginationItem>
     </Pagination>
   );

@@ -36,7 +36,7 @@ namespace WebApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1" });
             });
-
+            services.AddCors();
             services.AddDbContext<DatabaseContext>(
                 options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"))
                 );
@@ -56,9 +56,15 @@ namespace WebApi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1"));
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(x => x
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .SetIsOriginAllowed(origin => true) // allow any origin
+                            .AllowCredentials()); // allow credentials
 
             app.UseAuthorization();
 

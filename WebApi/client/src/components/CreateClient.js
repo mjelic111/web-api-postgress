@@ -27,6 +27,7 @@ const CreateClient = ({ createContact }) => {
           name="name"
           id="name"
           onChange={(e) => setName(e.target.value)}
+          required
         />
       </FormGroup>
       <FormGroup>
@@ -36,6 +37,7 @@ const CreateClient = ({ createContact }) => {
           name="address"
           id="address"
           onChange={(e) => setAddress(e.target.value)}
+          required
         />
       </FormGroup>
       <FormGroup>
@@ -46,6 +48,7 @@ const CreateClient = ({ createContact }) => {
           id="birthDateId"
           placeholder="date placeholder"
           onChange={(e) => setBirthDate(e.target.value)}
+          required
         />
       </FormGroup>
       <FormGroup>

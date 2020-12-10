@@ -32,13 +32,18 @@ function Clients() {
   const createContact = async (data) => {
     console.log("Creating client...");
     const url = process.env.REACT_APP_API_URL + "contact";
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "Content-type": "application/json; charset=UTF-8" },
-    });
-    toast("Client created", 1500);
-    console.log("Client created...");
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+      });
+      await response.json();
+      toast("Client created", 1500);
+    } catch (error) {
+      console.log(error);
+      toast("Error happend while creating client", 1500);
+    }
   };
 
   if (loading) {

@@ -163,7 +163,7 @@ namespace WebApi.Controllers
         private async Task<ActionResult<IEnumerable<ContactModel>>> mapToPaginationModel(int pageNumber, int pageSize, List<ContactModel> mapped)
         {
             var totalRecords = await repository.GetCount();
-            var totalPages = Convert.ToInt32((double)totalRecords / pageSize + 0.5);
+            var totalPages = totalRecords % pageSize == 0 ? Convert.ToInt32((double)totalRecords / pageSize) : Convert.ToInt32((double)totalRecords / pageSize + 0.5);
 
             if (pageNumber > totalPages)
             {

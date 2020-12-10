@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using WebApi.Hubs;
 
 namespace WebApi
 {
@@ -35,11 +36,12 @@ namespace WebApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1" });
             });
-
+            services.AddCors();
             services.AddDbContext<DatabaseContext>(
                 options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"))
                 );
             services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+            services.AddSignalR();
             services.AddControllers();
             services.Configure<PaginationSettings>(Configuration.GetSection("Pagination"));
         }
@@ -58,11 +60,18 @@ namespace WebApi
 
             app.UseRouting();
 
+            app.UseCors(x => x
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .SetIsOriginAllowed(origin => true) // allow any origin
+                            .AllowCredentials()); // allow credentials
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ContactHub>("/contactHub");
             });
         }
     }
